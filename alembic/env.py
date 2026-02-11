@@ -6,6 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.models.base import Base
+# TODO: Automatically import all models here to ensure they are registered with SQLAlchemy's metadata
 from app.models.user import User
 from app.models.blog import Blog
 from app.models.tag import Tag
