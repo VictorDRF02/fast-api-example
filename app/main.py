@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from app.api.middlewares.request_time import get_request_time
-from app.api.routers import user
+from app.middlewares.request_time import get_request_time
+from app.routers import user
 
 # App instance
 app = FastAPI()
