@@ -1,2 +1,3 @@
 # fast-api-example
-An fastApi proyect with Pydantic v2 and SQLAlchemy
+A fastApi project with Pydantic v2 and SQLAlchemy.
+
