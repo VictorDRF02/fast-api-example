@@ -3,6 +3,8 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.tag import TagResponse
+from app.schemas.user import UserResponse
 
 class BlogBase(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
@@ -23,9 +25,14 @@ class BlogUpdate(BaseModel):
 
 
 class BlogResponse(BlogBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     created_at: datetime
     updated_at: datetime
+    tags: list[TagResponse]
+    user: UserResponse
+
 
 class TagIDList(BaseModel):
     tag_ids: list[int]

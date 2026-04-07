@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
-from app.mixni.soft_delete import SoftDeleteMixin
+from app.mixin.soft_delete import SoftDeleteMixin
 from app.models.base import Base
 
 # Generic type variable for SQLAlchemy models

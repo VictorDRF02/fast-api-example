@@ -69,10 +69,11 @@ async def delete_blog(blog_id: int, db: AsyncSession = Depends(get_db)):
         is_deleted = await service.delete(blog_id)
         message = "Blog deleted successfully" if is_deleted else "No blog to delete"
         return {"detail": message}
-    except Exception:
+    except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
+# Tags assignment
 @router.post("/{blog_id}/tags/{tag_id}", response_model=BlogResponse)
 async def add_tag_to_blog(blog_id: int, tag_id: int, db: AsyncSession = Depends(get_db)):
     try:
@@ -85,7 +86,7 @@ async def add_tag_to_blog(blog_id: int, tag_id: int, db: AsyncSession = Depends(
         if "Tag not found" in error_msg:
             raise HTTPException(status_code=404, detail="Tag not found")
         raise HTTPException(status_code=400, detail=error_msg)
-    except Exception:
+    except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 

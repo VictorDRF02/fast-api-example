@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
-from app.mixni.soft_delete import SoftDeleteMixin
-from app.mixni.timestamp import TimestampMixin
+from app.mixin.soft_delete import SoftDeleteMixin
+from app.mixin.timestamp import TimestampMixin
 
 from app.models.base import Base
 

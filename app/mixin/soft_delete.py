@@ -6,8 +6,8 @@ from sqlalchemy import DateTime
 class SoftDeleteMixin:
     """Minix for adding soft delete functionality to models."""
     deleted_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime, 
-        default=None, 
+        DateTime(timezone=True),
+        default=None,
         nullable=True
     )
     
