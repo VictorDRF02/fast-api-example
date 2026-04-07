@@ -63,6 +63,7 @@ class BaseService(Generic[T]):
         await self.db.commit()
         return True
 
+
     async def create(self, data: BaseModel) -> T:
         """
         Generic create method to create an instance of the model.
@@ -80,6 +81,7 @@ class BaseService(Generic[T]):
 
         await self.db.refresh(instance)
         return instance
+
 
     async def update(self, element_id: int, data: BaseModel) -> T:
         """
