@@ -2,7 +2,7 @@ from fastapi import APIRouter, Query, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
-from app.schemas.user import UserResponse, UserCreate
+from app.schemas.user import UserResponse, UserCreate, UserUpdate
 from app.services.user import UserService
 
 router = APIRouter(
@@ -45,11 +45,22 @@ async def create_user(
         if str(exc) == "EMAIL_EXISTS":
             raise HTTPException(status_code=409, detail="Email already exists")
         raise HTTPException(status_code=400, detail="Invalid payload")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@router.put("/{user_id}")
-async def update_user(user_id: int):
-    pass
+@router.put("/{user_id}", response_model=UserResponse)
+async def update_user(user_id: int, payload: UserUpdate,
+                      db: AsyncSession = Depends(get_db)):
+    try:
+        service = UserService(db)
+        return await service.update(user_id, payload)
+    except ValueError as exc:
+        if str(exc) == "EMAIL_EXISTS":
+            raise HTTPException(status_code=409, detail="Email already exists")
+        raise HTTPException(status_code=400, detail="Invalid payload")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 @router.delete("/{user_id}")
