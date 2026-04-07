@@ -9,11 +9,12 @@ from sqlalchemy.orm import Session
 
 from app.mixin.soft_delete import SoftDeleteMixin
 from app.models.base import Base
+from app.services.database import DatabaseService
 
 # Generic type variable for SQLAlchemy models
 T = TypeVar("T", bound=Base)
 
-class BaseService(Generic[T]):
+class ModelService(DatabaseService, Generic[T]):
     """
     Base service class for common database operations.
     Attributes:
@@ -22,7 +23,7 @@ class BaseService(Generic[T]):
     """
 
     def __init__(self, db: AsyncSession, model: type[T]):
-        self.db = db
+        super().__init__(db)
         self.model = model
 
 

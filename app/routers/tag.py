@@ -3,18 +3,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.schemas.tag import TagCreate, TagResponse, TagUpdate
-from app.services.base import BaseService
-from app.models.tag import Tag
+from app.services.tag import TagService
 
 router = APIRouter(
     prefix="/tags",
     tags=["tags"],
 )
-
-
-class TagService(BaseService[Tag]):
-    def __init__(self, db: AsyncSession):
-        super().__init__(db, Tag)
 
 
 @router.get("/", response_model=list[TagResponse])

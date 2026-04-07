@@ -4,10 +4,10 @@ from sqlalchemy.orm import selectinload
 
 from app.models.blog import Blog
 from app.models.tag import Tag
-from app.services.base import BaseService
+from app.services.model import ModelService
 
 
-class BlogService(BaseService[Blog]):
+class BlogService(ModelService[Blog]):
     def __init__(self, db: AsyncSession):
         super().__init__(db, Blog)
 
