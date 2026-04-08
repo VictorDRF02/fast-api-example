@@ -1,33 +1,51 @@
 from datetime import datetime, UTC, timedelta
 
-import jwt
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 
+from app.core.security import create_access_token
 from app.models.user import User
+from app.schemas.auth import Register, Login
 from app.services.database import DatabaseService
 
 
 class AuthService(DatabaseService):
-    async def login(self, email: str, password: str):
+    async def login(self, payload: Login) -> dict:
+        email, password = payload.email , payload.password
         query = select(User).where(User.email == email)
-        user = (await  self.db.execute(query)).scalar_one_or_none()
-        if not user:
-            raise ValueError("Invalid credentials")
-        if user.password != password:
-            raise ValueError("Invalid credentials")
-        return self.getToken(user)
+        user = (await self.db.execute(query)).scalar_one_or_none()
 
-    async def register(self, email: str, password: str):
-        # Implement registration logic here
-        pass
+        if not user or not password == user.password:
+            raise ValueError("INVALID_CREDENTIALS")
 
-    async def get_token(self, user: User) -> str:
-        payload = {
-            "sub": user.id,
-            "name": user.name,
-            "email": user.email,
-            "iat": datetime.now(UTC),  # Issued At
-            "exp": datetime.now(UTC) + timedelta(hours=12)  # Expiration
-        }
-        # TODO: Change secret key
-        return jwt.encode(payload, '1234', algorithm="HS256")
+        token = create_access_token(
+            {"sub": str(user.id), "name": user.name, "email": user.email}
+        )
+        return {"access_token": token, "token_type": "bearer"}
+
+
+    async def register(self, payload: Register) -> dict:
+        name, email, password = payload.name, payload.email, payload.password
+        existing = (await self.db.execute(select(User).where(User.email == email))).scalar_one_or_none()
+        if existing:
+            raise ValueError("EMAIL_EXISTS")
+
+        user = User(
+            name=name,
+            email=email,
+            password=password,
+        )
+
+        self.db.add(user)
+        try:
+            await self.db.commit()
+        except IntegrityError:
+            await self.db.rollback()
+            raise ValueError("EMAIL_EXISTS")
+
+        await self.db.refresh(user)
+
+        token = create_access_token(
+            {"sub": str(user.id), "name": user.name, "email": user.email}
+        )
+        return {"access_token": token, "token_type": "bearer"}

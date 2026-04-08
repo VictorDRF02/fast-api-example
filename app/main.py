@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.middlewares.request_time import get_request_time
-from app.routers import blog, tag, user
+from app.routers import blog, tag, user, auth
 
 # App instance
 app = FastAPI()
@@ -12,3 +12,4 @@ app.middleware('http')(get_request_time)
 app.include_router(user.router)
 app.include_router(blog.router)
 app.include_router(tag.router)
+app.include_router(auth.router)

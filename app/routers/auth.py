@@ -17,6 +17,8 @@ async def login(payload: Login, db: AsyncSession = Depends(get_db)):
     try:
         service = AuthService(db)
         return await service.login(payload)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
@@ -26,6 +28,9 @@ async def register(payload: Register, db: AsyncSession = Depends(get_db)):
     try:
         service = AuthService(db)
         return await service.register(payload)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid registration details. The email may exists")
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
