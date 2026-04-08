@@ -39,6 +39,9 @@ class ModelService(DatabaseService, Generic[T]):
         if pagination:
             query = query.offset(offset).limit(limit)
 
+        if issubclass(self.model, SoftDeleteMixin):
+            query = query.where(self.model.deleted_at.is_(None))
+
         return (await self.db.execute(query)).scalars().all()
 
 
