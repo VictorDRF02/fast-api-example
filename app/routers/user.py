@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Query, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import get_current_user
 from app.db.session import get_db
+from app.models.user import User
 from app.schemas.user import UserResponse, UserCreate, UserUpdate
 from app.services.user import UserService
 
@@ -36,7 +38,8 @@ async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
 @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def create_user(
         payload: UserCreate,
-        db: AsyncSession = Depends(get_db)
+        db: AsyncSession = Depends(get_db),
+        current_user: User = Depends(get_current_user),
 ):
     try:
         service = UserService(db)
@@ -51,7 +54,8 @@ async def create_user(
 
 @router.put("/{user_id}", response_model=UserResponse)
 async def update_user(user_id: int, payload: UserUpdate,
-                      db: AsyncSession = Depends(get_db)):
+                      db: AsyncSession = Depends(get_db),
+                      current_user: User = Depends(get_current_user)):
     try:
         service = UserService(db)
         return await service.update(user_id, payload)
@@ -64,7 +68,7 @@ async def update_user(user_id: int, payload: UserUpdate,
 
 
 @router.delete("/{user_id}")
-async def delete_user(user_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_user(user_id: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         service = UserService(db)
         is_deleted = await service.delete(user_id)

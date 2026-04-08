@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import get_current_user
 from app.db.session import get_db
+from app.models.user import User
 from app.schemas.blog import BlogCreate, BlogResponse, BlogUpdate, TagIDList
 from app.services.blog import BlogService
 
@@ -39,7 +41,7 @@ async def read_blog(blog_id: int, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/", response_model=BlogResponse, status_code=status.HTTP_201_CREATED)
-async def create_blog(payload: BlogCreate, db: AsyncSession = Depends(get_db)):
+async def create_blog(payload: BlogCreate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         service = BlogService(db)
         return await service.create(payload)
@@ -50,7 +52,7 @@ async def create_blog(payload: BlogCreate, db: AsyncSession = Depends(get_db)):
 
 
 @router.put("/{blog_id}", response_model=BlogResponse)
-async def update_blog(blog_id: int, payload: BlogUpdate, db: AsyncSession = Depends(get_db)):
+async def update_blog(blog_id: int, payload: BlogUpdate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         service = BlogService(db)
         return await service.update(blog_id, payload)
@@ -63,7 +65,7 @@ async def update_blog(blog_id: int, payload: BlogUpdate, db: AsyncSession = Depe
 
 
 @router.delete("/{blog_id}")
-async def delete_blog(blog_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_blog(blog_id: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         service = BlogService(db)
         is_deleted = await service.delete(blog_id)
@@ -75,7 +77,7 @@ async def delete_blog(blog_id: int, db: AsyncSession = Depends(get_db)):
 
 # Tags assignment
 @router.post("/{blog_id}/tags/{tag_id}", response_model=BlogResponse)
-async def add_tag_to_blog(blog_id: int, tag_id: int, db: AsyncSession = Depends(get_db)):
+async def add_tag_to_blog(blog_id: int, tag_id: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         service = BlogService(db)
         return await service.add_tag(blog_id, tag_id)
@@ -91,7 +93,7 @@ async def add_tag_to_blog(blog_id: int, tag_id: int, db: AsyncSession = Depends(
 
 
 @router.delete("/{blog_id}/tags/{tag_id}", response_model=BlogResponse)
-async def remove_tag_from_blog(blog_id: int, tag_id: int, db: AsyncSession = Depends(get_db)):
+async def remove_tag_from_blog(blog_id: int, tag_id: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         service = BlogService(db)
         return await service.remove_tag(blog_id, tag_id)
@@ -107,7 +109,7 @@ async def remove_tag_from_blog(blog_id: int, tag_id: int, db: AsyncSession = Dep
 
 
 @router.post("/{blog_id}/tags", response_model=BlogResponse)
-async def set_blog_tags(blog_id: int, payload: TagIDList, db: AsyncSession = Depends(get_db)):
+async def set_blog_tags(blog_id: int, payload: TagIDList, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         service = BlogService(db)
         return await service.set_tags(blog_id, payload.tag_ids)

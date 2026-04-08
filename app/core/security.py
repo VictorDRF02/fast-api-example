@@ -11,7 +11,7 @@ from app.db.session import get_db
 from app.models.user import User
 
 # Environment variables for JWT configuration
-SECRET_KEY = os.getenv("SECRET_KEY", "change-this-in-production")
+SECRET_KEY = os.getenv("SECRET_KEY", "default-if-no-env")
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "720"))
 
