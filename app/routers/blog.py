@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.security import get_current_user
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.blog import BlogCreate, BlogResponse, BlogUpdate, TagIDList
+from app.schemas.blog import BlogCreate, BlogResponse, BlogUpdate, TagIDList, BlogSavedResponse
 from app.services.blog import BlogService
 
 router = APIRouter(
@@ -40,7 +40,7 @@ async def read_blog(blog_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@router.post("/", response_model=BlogResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=BlogSavedResponse, status_code=status.HTTP_201_CREATED)
 async def create_blog(payload: BlogCreate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         service = BlogService(db)
@@ -51,7 +51,7 @@ async def create_blog(payload: BlogCreate, db: AsyncSession = Depends(get_db), c
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@router.put("/{blog_id}", response_model=BlogResponse)
+@router.put("/{blog_id}", response_model=BlogSavedResponse)
 async def update_blog(blog_id: int, payload: BlogUpdate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         service = BlogService(db)

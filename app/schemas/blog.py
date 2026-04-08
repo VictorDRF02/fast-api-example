@@ -23,6 +23,12 @@ class BlogUpdate(BaseModel):
     content: Annotated[str | None, Field(default=None, min_length=1, max_length=1000)] = None
     user_id: Annotated[int | None, Field(default=None, gt=0)] = None
 
+class BlogSavedResponse(BlogBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    created_at: datetime
+    updated_at: datetime
 
 class BlogResponse(BlogBase):
     model_config = ConfigDict(from_attributes=True)
@@ -30,8 +36,8 @@ class BlogResponse(BlogBase):
     id: int
     created_at: datetime
     updated_at: datetime
-    tags: list[TagResponse]
-    user: UserResponse
+    tags: list[TagResponse] | None
+    user: UserResponse | None
 
 
 class TagIDList(BaseModel):
